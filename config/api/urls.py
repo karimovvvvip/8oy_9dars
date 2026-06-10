@@ -1,0 +1,20 @@
+from django.urls import path
+from .views import (MovieAPIView, ActorAPIView, GenreAPIView, DirectoryAPIView,
+                    ActorRetrieveAPIView, DirectoryRetrieveAPIView, GenreRetrieveAPIView, MovieRetrieveAPIView,
+                    CommentAPIView, CommentRetrieveAPIView)
+
+urlpatterns = [
+    path('movies/', MovieAPIView.as_view()),
+    path('movies/<int:pk>/', MovieRetrieveAPIView.as_view(), name='movie-detail'),
+    path('movies/genres/<int:pk>/', MovieAPIView.as_view()),
+    path('actors/', ActorAPIView.as_view()),
+    path('actors/<int:pk>/', ActorRetrieveAPIView.as_view()),
+    path('actors/grade/<int:pk>/', ActorAPIView.as_view()),
+    path('genres/', GenreAPIView.as_view()),
+    path('genres/<int:pk>/', GenreRetrieveAPIView.as_view()),
+    path('directory/', DirectoryAPIView.as_view()),
+    path('directory/<int:pk>/', DirectoryRetrieveAPIView.as_view(), name='rejissior-detail'),
+    path('movies/<int:movie_id>/comments/', CommentAPIView.as_view()),
+    path('movies/<int:movie_id>/comments/<int:comment_id>/', CommentRetrieveAPIView.as_view()),
+
+]
