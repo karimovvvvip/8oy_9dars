@@ -22,7 +22,7 @@ class DirectorySerializer(serializers.ModelSerializer):
     # movies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # movies = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='movie-detail')
     # movies = serializers.SlugRelatedField(many=True, read_only=True, slug_field='title')
-    url = serializers.HyperlinkedIdentityField(view_name='rejissior-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='directory-detail')
 
     class Meta:
         model = Directory
@@ -33,7 +33,7 @@ class DirectorySerializer(serializers.ModelSerializer):
 class MovieSerializerForGenre(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'description', 'release_year', 'poster', 'rejissior', 'actor']
+        fields = ['id', 'title', 'description', 'release_year', 'poster', 'directory', 'actor']
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -50,6 +50,18 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ['id']
 
+    # def create(self, validated_data):
+    #     movies = validated_data.pop('movies')
+    #     genre = Genre.objects.create(**validated_data)
+    #     for movie in movies:
+    #         Movie.objects.create(genre=genre, **movie)
+    #     return genre
+    # def create(self, validated_data):
+    #     movies = validated_data.pop('movies')
+    #     genre = Genre.objects.create(**validated_data)
+    #     for movie in movies:
+    #         Movie.objects.create(genre=genre, **movie)
+    #     return genre
     def create(self, validated_data):
         movies = validated_data.pop('movies')
         genre = Genre.objects.create(**validated_data)
@@ -74,7 +86,7 @@ class MovieSerializer(serializers.ModelSerializer):
         choices=Genre.objects.all(),
         write_only=True
     )
-    rejissior_write = serializers.ChoiceField(
+    directory_write = serializers.ChoiceField(
         choices=Directory.objects.all(),
         write_only=True
     )
@@ -85,19 +97,19 @@ class MovieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ['title', 'description', 'release_year', 'genre', 'rejissior', 'actor', 'genre_write',
-                  'rejissior_write', 'actor_write']
-        read_only_fields = ['id', 'rejissior_write', 'genre_write', 'actor_write', ]
+        fields = ['title', 'description', 'release_year', 'genre', 'directory', 'actor', 'genre_write',
+                  'directory_write', 'actor_write']
+        read_only_fields = ['id', 'directory_write', 'genre_write', 'actor_write', ]
         depth = 1
 
     def create(self, validated_data):
         genre_write = validated_data.pop('genre_write')
-        rejissior_write = validated_data.pop('rejissior_write')
+        directory_write = validated_data.pop('directory_write')
         actor_write = validated_data.pop('actor_write')
         movie = Movie.objects.create(
             genre=genre_write,
             actor=actor_write,
-            rejissior=rejissior_write,
+            directory=directory_write,
             **validated_data
         )
         movie.save()
@@ -106,7 +118,7 @@ class MovieSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.genre = validated_data.pop('genre_write', instance.genre)
         instance.actor = validated_data.pop('actor_write', instance.actor)
-        instance.rejissior = validated_data.pop('rejissior_write', instance.rejissior)
+        instance.directory = validated_data.pop('directory_write', instance.directory)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -116,7 +128,7 @@ class MovieSerializer(serializers.ModelSerializer):
 class MovieAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['title', 'description', 'release_year', 'poster', 'genre', 'rejissior', 'actor', ]
+        fields = ['title', 'description', 'release_year', 'poster', 'genre', 'directory', 'actor', ]
         read_only_fields = ['id']
 
 
